@@ -12,7 +12,7 @@
 const DEFAULT_API_URL = 'https://script.google.com/macros/s/AKfycbwrqLi3OwbzgVVDVRdeiLJSiwFqapf9zdO2hx0KGZm2tYy8zOes6rzhn8GO-8jHhRCeGg/exec';
 
 const State = {
-  apiUrl: localStorage.getItem('pf_api_url') || DEFAULT_API_URL,
+  apiUrl: DEFAULT_API_URL,
   prompts: [],           // full data from Sheets
   categories: new Set(),    // unique category names
   activeFilter: 'all',        // current category tab
@@ -118,12 +118,9 @@ function toggleTheme() {
 //  SETUP CHECK
 // ─────────────────────────────────────────────
 function checkSetup() {
-  if (!State.apiUrl) {
-    Dom.bannerSetup.classList.remove('visually-hidden');
-  } else {
-    Dom.bannerSetup.classList.add('visually-hidden');
-    Dom.fieldApiUrl.value = State.apiUrl;
-  }
+  // URL fija: siempre ocultar el banner de configuración
+  Dom.bannerSetup.classList.add('visually-hidden');
+  Dom.fieldApiUrl.value = State.apiUrl;
 }
 
 // ─────────────────────────────────────────────
@@ -220,12 +217,6 @@ function closeModal(modal) {
 }
 
 function openPromptModal(data = null) {
-  // Require API URL configured
-  if (!State.apiUrl) {
-    toast('Primero debes configurar la URL de la API', 'error');
-    openModal(Dom.modalSettings);
-    return;
-  }
 
   // Reset form
   Dom.formPrompt.reset();
