@@ -236,29 +236,26 @@ h1, h2, h3, h4 {
 .topbar__brand {
   display: flex;
   align-items: center;
-  gap: var(--space-3);
   flex-shrink: 0;
+  text-decoration: none;
 }
 
-.brand-icon {
-  width: 36px;
+.brand-logo {
   height: 36px;
-  border-radius: 9px;
-  overflow: hidden;
-  flex-shrink: 0;
-  box-shadow: 0 4px 12px rgba(99,102,241,.35);
+  width: auto;
+  object-fit: contain;
+  display: block;
+  transition: filter var(--t-normal), transform var(--t-fast);
 }
-.brand-icon svg { width: 100%; height: 100%; }
 
-.brand-name {
-  font-family: var(--font-display);
-  font-size: 1.35rem;
-  font-weight: 800;
-  color: var(--text-primary);
-  letter-spacing: -.04em;
-  white-space: nowrap;
+.brand-logo:hover {
+  transform: scale(1.02);
 }
-.brand-name span { color: var(--accent); }
+
+/* Filtro adaptativo para que el logo blanco sea oscuro en el modo claro */
+html[data-theme="light"] .brand-logo {
+  filter: invert(1) brightness(0.1);
+}
 
 /* Actions */
 .topbar__actions {
