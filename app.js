@@ -8,6 +8,9 @@
 // ─────────────────────────────────────────────
 //  GLOBAL STATE
 // ─────────────────────────────────────────────
+// URL fija de la API de Google Apps Script
+const DEFAULT_API_URL = 'https://script.google.com/macros/s/AKfycbwrqLi3OwbzgVVDVRdeiLJSiwFqapf9zdO2hx0KGZm2tYy8zOes6rzhn8GO-8jHhRCeGg/exec';
+
 const State = {
   apiUrl: localStorage.getItem('pf_api_url') || '',
   prompts: [],           // full data from Sheets
