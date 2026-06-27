@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PromptFlow — Administrador de Prompts</title>
+  <meta name="description" content="Herramienta SPA para administrar prompts de IA conectada a Google Sheets como base de datos." />
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+
+  <!-- Stylesheet -->
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════════
+     APP SHELL
+══════════════════════════════════════════════ -->
+<div class="app-shell">
+
+  <!-- ─── HEADER ─────────────────────────────── -->
+  <header class="topbar" role="banner">
+    <div class="topbar__brand">
+      <!-- Logo SVG -->
+      <div class="brand-icon" aria-hidden="true">
+        <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect width="32" height="32" rx="9" fill="url(#brand-grad)"/>
+          <path d="M8 11h16M8 16h10M8 21h13" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/>
+          <circle cx="23" cy="21" r="3" fill="#fff" fill-opacity=".9"/>
+          <defs>
+            <linearGradient id="brand-grad" x1="0" y1="0" x2="32" y2="32">
+              <stop stop-color="#818cf8"/>
+              <stop offset="1" stop-color="#6366f1"/>
+            </linearGradient>
+          </defs>
+        </svg>
+      </div>
+      <h1 class="brand-name">Prompt<span>Flow</span></h1>
+    </div>
+
+    <nav class="topbar__actions" aria-label="Acciones principales">
+      <!-- Stats pill -->
+      <div class="stats-pill" id="stats-pill" title="Total de prompts cargados">
+        <span id="stats-count">0</span> prompts
+      </div>
+
+      <!-- Dark mode toggle -->
+      <button id="btn-theme" class="icon-btn" title="Cambiar tema" aria-label="Alternar modo oscuro/claro">
+        <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/>
+          <line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
+          <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/>
+          <line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
+          <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+        </svg>
+        <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+        </svg>
+      </button>
+
+      <!-- Settings -->
+      <button id="btn-settings" class="icon-btn" title="Configurar URL de API" aria-label="Abrir configuración de API">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <circle cx="12" cy="12" r="3"/>
+          <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+        </svg>
+      </button>
+
+      <!-- New prompt (desktop) -->
+      <button id="btn-new-prompt" class="btn-primary" aria-label="Crear nuevo prompt">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true">
+          <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+        </svg>
+        <span>Nuevo Prompt</span>
+      </button>
+    </nav>
+  </header>
+
+  <!-- ─── MAIN ─────────────────────────────── -->
+  <main class="main" role="main">
+
+    <!-- Setup warning banner -->
+    <div id="banner-setup" class="banner banner--warning visually-hidden" role="alert">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+        <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+        <line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>
+      </svg>
+      <p>La URL de la API no está configurada. Haz clic en <strong>Configurar</strong> para conectar con Google Sheets.</p>
+      <button id="btn-banner-settings" class="btn-banner">Configurar</button>
+    </div>
+
+    <!-- Control panel: search + category filters -->
+    <section class="control-panel" aria-label="Filtros y búsqueda">
+      <div class="search-box">
+        <svg class="search-box__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+        </svg>
+        <input
+          type="search"
+          id="input-search"
+          placeholder="Buscar por nombre, categoría o prompt…"
+          autocomplete="off"
+          aria-label="Buscar prompts"
+        />
+        <button id="btn-clear-search" class="search-box__clear visually-hidden" aria-label="Limpiar búsqueda">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
+            <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
+        </button>
+      </div>
+
+      <div class="filter-bar" role="group" aria-label="Filtrar por categoría">
+        <span class="filter-bar__label">Categorías:</span>
+        <div class="filter-bar__tabs" id="category-tabs">
+          <button class="tab tab--active" data-cat="all">Todos</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Prompts section -->
+    <section class="prompts-section" aria-label="Lista de prompts">
+
+      <!-- Loading -->
+      <div id="state-loading" class="state-view visually-hidden" aria-live="polite">
+        <div class="spinner" role="status" aria-label="Cargando..."></div>
+        <p>Conectando con Google Sheets…</p>
+      </div>
+
+      <!-- Error -->
+      <div id="state-error" class="state-view state-view--error visually-hidden" role="alert">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+          <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/>
+          <line x1="12" y1="16" x2="12.01" y2="16"/>
+        </svg>
+        <h2>Error de conexión</h2>
+        <p id="error-msg">No se pudo conectar con el script de Google.</p>
+        <button id="btn-retry" class="btn-secondary">Reintentar</button>
+      </div>
+
+      <!-- Empty -->
+      <div id="state-empty" class="state-view state-view--empty visually-hidden">
+        <div class="empty-icon" aria-hidden="true">
+          <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="8" y="8" width="48" height="48" rx="10" stroke="currentColor" stroke-width="2.5" stroke-dasharray="6 4"/>
+            <path d="M24 32h16M32 24v16" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <h2>Sin prompts</h2>
+        <p>No hay nada aquí todavía. Crea tu primer prompt para empezar.</p>
+        <button id="btn-empty-create" class="btn-primary">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true">
+            <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+          </svg>
+          Crear Prompt
+        </button>
+      </div>
+
+      <!-- Prompts grid -->
+      <div id="prompts-grid" class="prompts-grid" role="list" aria-label="Tarjetas de prompts"></div>
+
+    </section>
+  </main>
+
+  <!-- FAB mobile -->
+  <button id="btn-fab" class="fab" aria-label="Nuevo prompt (acceso rápido)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true">
+      <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+    </svg>
+  </button>
+
+  <!-- Footer -->
+  <footer class="footer" role="contentinfo">
+    <p>PromptFlow &copy; 2026 · Potenciado por Google Sheets &amp; Apps Script</p>
+  </footer>
+
+</div><!-- /app-shell -->
+
+
+<!-- ══════════════════════════════════════════════
+     MODAL — Crear / Editar Prompt
+══════════════════════════════════════════════ -->
+<div id="modal-prompt" class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-prompt-title">
+  <div class="modal__backdrop" id="modal-prompt-backdrop"></div>
+  <div class="modal__panel">
+    <div class="modal__header">
+      <h2 id="modal-prompt-title" class="modal__title">Nuevo Prompt</h2>
+      <button class="modal__close" id="btn-close-prompt-modal" aria-label="Cerrar">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
+          <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+        </svg>
+      </button>
+    </div>
+
+    <form id="form-prompt" class="modal__body" novalidate>
+      <input type="hidden" id="field-id" />
+
+      <!-- Categoría con autocompletado -->
+      <div class="field-group">
+        <label class="field-label" for="field-categoria">
+          Categoría <span class="required" aria-hidden="true">*</span>
+        </label>
+        <div class="autocomplete-wrap">
+          <input
+            type="text"
+            id="field-categoria"
+            class="field-input"
+            placeholder="Ej: Redacción, Programación, Análisis…"
+            autocomplete="off"
+            required
+          />
+          <ul id="autocomplete-list" class="autocomplete-list visually-hidden" role="listbox" aria-label="Categorías disponibles"></ul>
+        </div>
+        <span class="field-hint">Escribe una nueva o elige una existente.</span>
+      </div>
+
+      <!-- Nombre -->
+      <div class="field-group">
+        <label class="field-label" for="field-nombre">
+          Nombre del Prompt <span class="required" aria-hidden="true">*</span>
+        </label>
+        <input
+          type="text"
+          id="field-nombre"
+          class="field-input"
+          placeholder="Ej: Resumidor de textos largos"
+          required
+        />
+      </div>
+
+      <!-- Prompt -->
+      <div class="field-group">
+        <label class="field-label" for="field-prompt">
+          Prompt <span class="required" aria-hidden="true">*</span>
+        </label>
+        <textarea
+          id="field-prompt"
+          class="field-textarea"
+          rows="6"
+          placeholder="Escribe el prompt aquí. Usa [variables] para indicar parámetros variables."
+          required
+        ></textarea>
+        <div class="char-counter">
+          <span id="char-count">0</span> caracteres
+        </div>
+      </div>
+
+      <!-- Ejemplos -->
+      <div class="field-group">
+        <label class="field-label" for="field-ejemplos">Ejemplos de Uso</label>
+        <textarea
+          id="field-ejemplos"
+          class="field-textarea"
+          rows="3"
+          placeholder="Opcional. Ej: Entrada: Texto de 1000 palabras → Salida: Resumen de 100 palabras"
+        ></textarea>
+      </div>
+
+      <div class="modal__footer">
+        <button type="button" id="btn-cancel-prompt" class="btn-secondary">Cancelar</button>
+        <button type="submit" id="btn-save-prompt" class="btn-primary">
+          <span class="btn-label">Guardar Prompt</span>
+          <span class="btn-spinner visually-hidden" aria-hidden="true"></span>
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════
+     MODAL — Configuración API
+══════════════════════════════════════════════ -->
+<div id="modal-settings" class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-settings-title">
+  <div class="modal__backdrop" id="modal-settings-backdrop"></div>
+  <div class="modal__panel modal__panel--sm">
+    <div class="modal__header">
+      <h2 id="modal-settings-title" class="modal__title">Configuración API</h2>
+      <button class="modal__close" id="btn-close-settings" aria-label="Cerrar">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
+          <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+        </svg>
+      </button>
+    </div>
+
+    <form id="form-settings" class="modal__body" novalidate>
+      <div class="field-group">
+        <label class="field-label" for="field-api-url">URL de Google Apps Script</label>
+        <input
+          type="url"
+          id="field-api-url"
+          class="field-input"
+          placeholder="https://script.google.com/macros/s/…/exec"
+          required
+        />
+        <span class="field-hint">Pega aquí la URL del Web App desplegado en Google Apps Script.</span>
+      </div>
+
+      <!-- Instrucciones de configuración -->
+      <div class="setup-steps">
+        <h3 class="setup-steps__title">¿Cómo obtener la URL?</h3>
+        <ol class="setup-steps__list">
+          <li>Crea una <strong>Google Sheet</strong> nueva.</li>
+          <li>Ve a <strong>Extensiones › Apps Script</strong>.</li>
+          <li>Pega el contenido de <code>codigo.gs</code> y guarda.</li>
+          <li>Ejecuta <code>inicializarHoja()</code> una vez.</li>
+          <li>Haz clic en <strong>Implementar › Nueva implementación</strong>.</li>
+          <li>Tipo: <em>Aplicación Web</em> · Acceso: <em>Cualquiera</em>.</li>
+          <li>Copia la URL generada y pégala arriba.</li>
+        </ol>
+      </div>
+
+      <div class="modal__footer">
+        <button type="button" id="btn-cancel-settings" class="btn-secondary">Cancelar</button>
+        <button type="submit" class="btn-primary">Guardar</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════
+     MODAL — Confirmación de Borrado
+══════════════════════════════════════════════ -->
+<div id="modal-confirm" class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-confirm-title">
+  <div class="modal__backdrop" id="modal-confirm-backdrop"></div>
+  <div class="modal__panel modal__panel--xs">
+    <div class="modal__header">
+      <h2 id="modal-confirm-title" class="modal__title modal__title--danger">Eliminar Prompt</h2>
+    </div>
+    <div class="modal__body">
+      <p class="confirm-text">¿Estás seguro de que deseas eliminar este prompt? Esta acción <strong>no se puede deshacer</strong>.</p>
+      <div class="modal__footer">
+        <button id="btn-confirm-cancel" class="btn-secondary">Cancelar</button>
+        <button id="btn-confirm-delete" class="btn-danger">
+          <span class="btn-label">Eliminar</span>
+          <span class="btn-spinner visually-hidden" aria-hidden="true"></span>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════
+     TOAST CONTAINER
+══════════════════════════════════════════════ -->
+<div id="toast-container" class="toast-container" role="region" aria-label="Notificaciones" aria-live="polite"></div>
+
+<!-- JavaScript -->
+<script src="app.js"></script>
+</body>
+</html>
